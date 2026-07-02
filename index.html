@@ -1,778 +1,609 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>野生动物监测预警系统</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X9野生动物监测预警系统 | 科技守护自然</title>
+    <!-- 引入 FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== 全局重置 & 字体 ===== */
+        /* ==================== 全局与变量 (明亮生态风) ==================== */
+        :root {
+            --bg-primary: #F8FAFC;       /* 极浅的灰白背景，通透不刺眼 */
+            --bg-secondary: #F1F5F9;     /* 浅灰蓝背景，用于区块区分 */
+            --card-bg: #FFFFFF;          /* 纯白卡片 */
+            --card-border: #E2E8F0;      /* 浅灰边框 */
+            --text-primary: #0F172A;     /* 深色主文本，保证高对比度 */
+            --text-secondary: #64748B;   /* 中灰次文本 */
+            --accent-green: #059669;     /* 清新的生态绿 (调深一点以保证在浅色背景上的可读性) */
+            --accent-blue: #2563EB;      /* 明亮的科技蓝 */
+            --accent-gradient: linear-gradient(135deg, #059669 0%, #2563EB 100%);
+            
+            /* 柔和的阴影系统，替代暗黑模式下的发光效果 */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
-            background: #0d1410;
-            color: #e3e9e3;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        /* ===== 滚动条 ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a241e;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4a7c5c;
-            border-radius: 10px;
-        }
-
-        /* ===== 背景动画粒子（装饰） ===== */
-        #bg-canvas {
+        /* ==================== 导航栏 ==================== */
+        header {
             position: fixed;
             top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.35;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(248, 250, 252, 0.8); /* 半透明白色 */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            transition: all 0.3s ease;
         }
 
-        /* ===== 容器 ===== */
-        .container {
+        nav {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ===== 导航栏 ===== */
-        .navbar {
+            padding: 1rem 2rem;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 20px 0;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(74, 124, 92, 0.25);
+            align-items: center;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: 700;
-            letter-spacing: 1px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
-        .logo-icon {
-            display: inline-block;
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #4a7c5c, #2f5a44);
-            border-radius: 50%;
-            position: relative;
-            box-shadow: 0 0 20px rgba(74, 124, 92, 0.3);
-        }
-        .logo-icon::after {
-            content: "🐾";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px;
+        .logo i {
+            -webkit-text-fill-color: var(--accent-green);
         }
 
         .nav-links {
             display: flex;
-            gap: 32px;
-            font-weight: 400;
-            font-size: 15px;
-            color: #a4b8ab;
-        }
-        .nav-links a {
-            transition: color 0.3s;
-            position: relative;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #6faf87;
-            transition: width 0.3s;
-        }
-        .nav-links a:hover {
-            color: #d4eadb;
-        }
-        .nav-links a:hover::after {
-            width: 100%;
+            list-style: none;
+            gap: 2rem;
         }
 
-        /* ===== Hero ===== */
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ==================== 首屏 Hero ==================== */
         .hero {
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 75vh;
             text-align: center;
-            padding: 40px 0 60px;
+            position: relative;
+            padding: 0 2rem;
+            /* 极淡的生态网格背景 */
+            background-image: 
+                linear-gradient(rgba(5, 150, 105, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(5, 150, 105, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+            filter: blur(60px);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-badge {
             display: inline-block;
-            background: rgba(74, 124, 92, 0.2);
-            border: 1px solid rgba(74, 124, 92, 0.3);
-            border-radius: 100px;
-            padding: 6px 20px;
-            font-size: 13px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #8bc9a4;
-            margin-bottom: 28px;
-            backdrop-filter: blur(4px);
+            padding: 0.4rem 1.2rem;
+            background: rgba(5, 150, 105, 0.08);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            border-radius: 50px;
+            color: var(--accent-green);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
         }
 
         .hero h1 {
-            font-size: clamp(44px, 8vw, 80px);
-            font-weight: 700;
-            line-height: 1.1;
-            background: linear-gradient(135deg, #e3f0e6 0%, #8bc9a4 70%, #4a7c5c 100%);
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            /* 深色渐变标题，稳重且有质感 */
+            background: linear-gradient(to right, #0F172A, #334155);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            max-width: 900px;
         }
 
         .hero p {
-            font-size: 18px;
-            color: #b6ccc0;
-            max-width: 640px;
-            margin: 24px auto 36px;
-            line-height: 1.8;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .hero-actions {
+        .btn-group {
             display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
+            gap: 1rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn {
-            display: inline-block;
-            padding: 14px 40px;
-            border-radius: 60px;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
-            font-size: 16px;
+            text-decoration: none;
             transition: all 0.3s ease;
-            cursor: default;
+            cursor: pointer;
             border: none;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4a7c5c, #2f5a44);
-            color: #fff;
-            box-shadow: 0 8px 30px rgba(74, 124, 92, 0.3);
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.25);
         }
+
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(74, 124, 92, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(5, 150, 105, 0.35);
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid rgba(74, 124, 92, 0.5);
-            color: #d4eadb;
-        }
-        .btn-outline:hover {
-            border-color: #6faf87;
-            background: rgba(74, 124, 92, 0.1);
-            transform: translateY(-3px);
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
         }
 
-        /* ===== 统计条 ===== */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 20px;
-            margin: 60px auto 20px;
-            width: 100%;
-            max-width: 800px;
-            padding: 30px 20px;
-            background: rgba(26, 36, 30, 0.6);
-            backdrop-filter: blur(8px);
-            border-radius: 24px;
-            border: 1px solid rgba(74, 124, 92, 0.15);
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: #CBD5E1;
         }
 
-        .stat-item {
+        /* ==================== 通用 Section 样式 ==================== */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
             text-align: center;
+            margin-bottom: 4rem;
         }
-        .stat-number {
-            font-size: 36px;
+
+        .section-header h2 {
+            font-size: 2.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #d4eadb, #6faf87);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .stat-label {
-            font-size: 14px;
-            color: #8fa89b;
-            margin-top: 4px;
-            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
         }
 
-        /* ===== 通用标题 ===== */
-        .section-title {
-            font-size: clamp(32px, 4vw, 48px);
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #e3f0e6, #8bc9a4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .section-sub {
-            text-align: center;
-            color: #a4b8ab;
-            max-width: 560px;
-            margin: 0 auto 48px;
-            font-size: 17px;
-        }
-
-        /* ===== 功能卡片 ===== */
-        .features {
-            padding: 80px 0 60px;
-        }
-
-        .feature-grid {
+        /* ==================== 核心功能 ==================== */
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 30px;
+            gap: 2rem;
         }
 
         .feature-card {
-            background: rgba(26, 36, 30, 0.5);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(74, 124, 92, 0.12);
-            border-radius: 24px;
-            padding: 32px 28px;
-            transition: all 0.35s ease;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
+
         .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(74, 124, 92, 0.35);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            background: rgba(26, 36, 30, 0.7);
+            transform: translateY(-5px);
+            border-color: rgba(5, 150, 105, 0.3);
+            box-shadow: var(--shadow-xl);
         }
 
         .feature-icon {
-            font-size: 40px;
-            margin-bottom: 16px;
-            display: block;
+            width: 50px;
+            height: 50px;
+            background: rgba(5, 150, 105, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent-green);
+            margin-bottom: 1.5rem;
         }
+
         .feature-card h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #d4eadb;
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
         }
+
         .feature-card p {
-            color: #a4b8ab;
-            font-size: 15px;
-            line-height: 1.7;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
-        /* ===== 工作流程 ===== */
-        .workflow {
-            padding: 60px 0 80px;
+        /* ==================== 数据看板 ==================== */
+        .stats-section {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 4rem 2rem;
+            border: 1px solid var(--card-border);
         }
 
-        .flow-steps {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px 40px;
-            margin-top: 20px;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: rgba(26, 36, 30, 0.4);
-            backdrop-filter: blur(4px);
-            padding: 16px 28px 16px 20px;
-            border-radius: 60px;
-            border: 1px solid rgba(74, 124, 92, 0.12);
-            transition: all 0.3s;
-        }
-        .step:hover {
-            border-color: rgba(74, 124, 92, 0.35);
-            background: rgba(26, 36, 30, 0.6);
-        }
-
-        .step-num {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4a7c5c, #2f5a44);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        .step-text {
-            font-weight: 500;
-            color: #d4eadb;
-        }
-        .step-arrow {
-            color: #4a7c5c;
-            font-size: 20px;
-            margin-left: 4px;
-        }
-
-        /* ===== 技术亮点 ===== */
-        .tech-section {
-            padding: 60px 0 80px;
-        }
-
-        .tech-grid {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-        }
-
-        .tech-item {
+            gap: 2rem;
             text-align: center;
-            padding: 28px 16px;
-            background: rgba(26, 36, 30, 0.3);
-            border-radius: 20px;
-            border: 1px solid rgba(74, 124, 92, 0.08);
-            transition: 0.3s;
-        }
-        .tech-item:hover {
-            background: rgba(26, 36, 30, 0.5);
-            border-color: rgba(74, 124, 92, 0.2);
-        }
-        .tech-item .emoji-big {
-            font-size: 44px;
-            display: block;
-            margin-bottom: 12px;
-        }
-        .tech-item h4 {
-            font-size: 18px;
-            color: #d4eadb;
-            margin-bottom: 4px;
-        }
-        .tech-item p {
-            font-size: 14px;
-            color: #8fa89b;
         }
 
-        /* ===== 页脚 ===== */
-        .footer {
-            border-top: 1px solid rgba(74, 124, 92, 0.12);
-            padding: 40px 0 32px;
-            margin-top: 20px;
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* ==================== 系统优势 ==================== */
+        .advantages-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .advantage-item {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        .advantage-item:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+
+        .advantage-icon {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            background: rgba(37, 99, 235, 0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+        }
+
+        .advantage-text h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .advantage-text p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ==================== 页脚 ==================== */
+        footer {
             text-align: center;
-            color: #6a8577;
-            font-size: 14px;
-        }
-        .footer span {
-            color: #8bc9a4;
+            padding: 3rem 2rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 700px) {
-            .navbar {
-                flex-direction: column;
-                gap: 16px;
-            }
+        footer a {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ==================== 动画 ==================== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==================== 响应式 ==================== */
+        @media (max-width: 768px) {
             .nav-links {
-                gap: 20px;
-                font-size: 14px;
-                flex-wrap: wrap;
-                justify-content: center;
+                display: none; 
             }
-            .hero h1 {
-                font-size: 38px;
-            }
-            .stats-bar {
-                grid-template-columns: 1fr 1fr;
-            }
-            .step {
-                width: 100%;
-                justify-content: center;
-            }
-            .step-arrow {
-                display: none;
-            }
-            .flow-steps {
-                flex-direction: column;
-                align-items: stretch;
-            }
-        }
 
-        @media (max-width: 420px) {
-            .stats-bar {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .hero h1 {
+                font-size: 2.2rem;
             }
-            .hero-actions .btn {
-                width: 100%;
-                text-align: center;
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .stat-item h3 {
+                font-size: 2.2rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== 背景粒子画布 ===== -->
-    <canvas id="bg-canvas"></canvas>
-
-    <!-- ===== 主容器 ===== -->
-    <div class="container">
-
-        <!-- ===== 导航 ===== -->
-        <nav class="navbar">
+    <!-- 导航栏 -->
+    <header>
+        <nav>
             <div class="logo">
-                <span class="logo-icon"></span>
-                野智监测
+                <i class="fa-solid fa-paw"></i>
+                <span>X9野生动物监测预警系统</span>
             </div>
-            <div class="nav-links">
-                <a href="#features">功能</a>
-                <a href="#workflow">流程</a>
-                <a href="#tech">技术</a>
-                <a href="#stats">数据</a>
-            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">首页</a></li>
+                <li><a href="#features">核心功能</a></li>
+                <li><a href="#stats">数据看板</a></li>
+                <li><a href="#advantages">系统优势</a></li>
+            </ul>
         </nav>
+    </header>
 
-        <!-- ===== Hero ===== -->
-        <section class="hero" id="home">
-            <span class="hero-badge">🌿 实时 · 智能 · 守护</span>
-            <h1>野生动物监测<br />预警系统</h1>
-            <p>
-                融合 AI 视觉识别与物联网传感网络，实现对珍稀野生动物的
-                全天候监测、行为分析与智能预警，为生态保护提供数据支撑。
-            </p>
-            <div class="hero-actions">
-                <span class="btn btn-primary">探索系统</span>
-                <span class="btn btn-outline">了解更多</span>
+    <!-- 首屏 Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <span class="hero-badge"><i class="fa-solid fa-satellite-dish"></i> X9新一代生态物联网平台</span>
+            <h1>野生动物监测预警系统</h1>
+            <p>融合物联网、人工智能与大数据技术，构建全天候、智能化的生态保护防线，让科技成为守护自然的坚实力量。</p>
+            <div class="btn-group">
+                <a href="#features" class="btn btn-primary">探索系统功能</a>
+                <a href="#advantages" class="btn btn-secondary">了解技术优势</a>
             </div>
+        </div>
+    </section>
 
-            <!-- 统计条 -->
-            <div class="stats-bar" id="stats">
+    <!-- 核心功能 -->
+    <section id="features">
+        <div class="section-header fade-in">
+            <h2>核心功能</h2>
+            <p>从数据采集到智能决策，提供全链路的野生动物保护解决方案</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-video"></i></div>
+                <h3>全天候实时监测</h3>
+                <p>无缝接入红外相机、声纹传感器与气象站，7×24小时不间断采集野外多模态数据，无惧恶劣环境。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>AI 智能识别</h3>
+                <p>基于边缘计算与深度学习算法，精准识别数百种野生动物及其行为特征，有效过滤无效触发数据。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-bell"></i></div>
+                <h3>多维预警推送</h3>
+                <p>当检测到珍稀物种出没或人兽冲突风险时，系统秒级触发多端预警（短信、APP、大屏），防患于未然。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>生态大数据分析</h3>
+                <p>可视化展示物种分布、活动轨迹与种群趋势，生成专业生态报告，为科研与保护决策提供数据支撑。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 数据看板 -->
+    <section id="stats">
+        <div class="stats-section fade-in">
+            <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number" data-target="128">0</div>
-                    <div class="stat-label">监测物种</div>
+                    <h3 class="counter" data-target="15000">0</h3>
+                    <p>监测覆盖面积 (km²)</p>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="3400">0</div>
-                    <div class="stat-label">活跃设备</div>
+                    <h3 class="counter" data-target="500">0</h3>
+                    <p>可识别物种数量</p>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="96.7">0</div>
-                    <div class="stat-label">识别准确率 %</div>
+                    <h3 class="counter" data-target="99">0</h3>
+                    <p>识别准确率 (%)</p>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="524">0</div>
-                    <div class="stat-label">预警事件</div>
+                    <h3 class="counter" data-target="3">0</h3>
+                    <p>预警响应时间 (秒)</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ===== 功能 ===== -->
-        <section class="features" id="features">
-            <h2 class="section-title">核心能力</h2>
-            <p class="section-sub">
-                从数据采集到智能决策，构建完整的生态监测闭环。
-            </p>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <span class="feature-icon">📡</span>
-                    <h3>多模感知</h3>
-                    <p>红外相机、声纹采集、GPS 项圈、环境传感器多源融合，覆盖 24×7 不间断监测。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🧠</span>
-                    <h3>AI 识别引擎</h3>
-                    <p>基于深度学习的物种识别与行为分析，支持 200+ 野生动物种类，精度达 96.7%。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">⚡</span>
-                    <h3>实时预警</h3>
-                    <p>异常行为、栖息地变化、人为干扰等事件毫秒级检测，自动推送至管理端与移动端。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">📊</span>
-                    <h3>数据可视化</h3>
-                    <p>动态仪表盘展示种群分布、活动热区、趋势预测，辅助科学决策与保护策略制定。</p>
+    <!-- 系统优势 -->
+    <section id="advantages">
+        <div class="section-header fade-in">
+            <h2>为什么选择我们</h2>
+            <p>专为复杂野外环境设计的工业级生态监测架构</p>
+        </div>
+        <div class="advantages-list">
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-microchip"></i></div>
+                <div class="advantage-text">
+                    <h4>端云协同架构</h4>
+                    <p>前端设备具备边缘计算能力，本地完成初步识别与过滤，大幅降低网络带宽压力，提升响应速度。</p>
                 </div>
             </div>
-        </section>
-
-        <!-- ===== 工作流程 ===== -->
-        <section class="workflow" id="workflow">
-            <h2 class="section-title">工作流程</h2>
-            <p class="section-sub">从野外感知到预警响应，全链路自动化。</p>
-            <div class="flow-steps">
-                <div class="step">
-                    <span class="step-num">1</span>
-                    <span class="step-text">数据采集</span>
-                    <span class="step-arrow">→</span>
-                </div>
-                <div class="step">
-                    <span class="step-num">2</span>
-                    <span class="step-text">AI 处理</span>
-                    <span class="step-arrow">→</span>
-                </div>
-                <div class="step">
-                    <span class="step-num">3</span>
-                    <span class="step-text">分析研判</span>
-                    <span class="step-arrow">→</span>
-                </div>
-                <div class="step">
-                    <span class="step-num">4</span>
-                    <span class="step-text">预警推送</span>
-                    <span class="step-arrow">→</span>
-                </div>
-                <div class="step">
-                    <span class="step-num">5</span>
-                    <span class="step-text">响应处置</span>
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-solar-panel"></i></div>
+                <div class="advantage-text">
+                    <h4>绿色能源驱动</h4>
+                    <p>监测终端采用“太阳能+风能”互补供电系统，配合超低功耗设计，实现真正的无人值守与长期运行。</p>
                 </div>
             </div>
-        </section>
-
-        <!-- ===== 技术亮点 ===== -->
-        <section class="tech-section" id="tech">
-            <h2 class="section-title">技术底座</h2>
-            <p class="section-sub">前沿技术驱动，构建可靠、可扩展的监测平台。</p>
-            <div class="tech-grid">
-                <div class="tech-item">
-                    <span class="emoji-big">🤖</span>
-                    <h4>深度学习</h4>
-                    <p>YOLOv8 + ResNet 双流识别</p>
-                </div>
-                <div class="tech-item">
-                    <span class="emoji-big">🌐</span>
-                    <h4>物联网</h4>
-                    <p>LoRa + 5G 低功耗广域组网</p>
-                </div>
-                <div class="tech-item">
-                    <span class="emoji-big">☁️</span>
-                    <h4>云边协同</h4>
-                    <p>边缘计算 + 云端大数据分析</p>
-                </div>
-                <div class="tech-item">
-                    <span class="emoji-big">🔐</span>
-                    <h4>数据安全</h4>
-                    <p>国密加密 + 隐私计算</p>
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="advantage-text">
+                    <h4>高可靠防护等级</h4>
+                    <p>硬件设备达到 IP67 防护等级，防盐雾、防霉菌、耐高低温，完美适应雨林、雪山、荒漠等极端生境。</p>
                 </div>
             </div>
-        </section>
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-plug"></i></div>
+                <div class="advantage-text">
+                    <h4>开放兼容生态</h4>
+                    <p>提供标准化 API 接口，支持对接各类第三方红外相机、无人机及政府监管平台，打破数据孤岛。</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <!-- ===== 页脚 ===== -->
-        <footer class="footer">
-            <p>
-                🌱 用科技守护自然 · 野生动物监测预警系统 &nbsp;|&nbsp;
-                <span>v2.4.1</span>
-            </p>
-            <p style="margin-top: 8px; font-size: 13px; color: #4d6b5a;">
-                数据仅供科研与保护使用 · 模拟展示
-            </p>
-        </footer>
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2026 X9 野生动物监测预警系统. 科技守护自然，共建地球生命共同体.</p>
+        <p style="margin-top: 0.5rem;">联系我们: 15677672224 &nbsp;|&nbsp; <a href="mailto:pthill@163.com">pthill@163.com</a></p>
+    </footer>
 
-    </div>
-
-    <!-- ===== JavaScript ===== -->
+    <!-- JavaScript 交互 -->
     <script>
-        (function() {
-            'use strict';
+        // 1. 滚动淡入动画 (Intersection Observer)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-            // ---------- 背景粒子动画 ----------
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            let w, h;
-            const particles = [];
-            const COUNT = 70;
-
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            class Particle {
-                constructor() {
-                    this.reset();
-                }
-                reset() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.r = Math.random() * 2.2 + 0.6;
-                    this.dx = (Math.random() - 0.5) * 0.25;
-                    this.dy = (Math.random() - 0.5) * 0.25;
-                    this.alpha = Math.random() * 0.5 + 0.15;
-                }
-                update() {
-                    this.x += this.dx;
-                    this.y += this.dy;
-                    if (this.x < 0 || this.x > w) this.dx *= -1;
-                    if (this.y < 0 || this.y > h) this.dy *= -1;
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(111, 175, 135, ${this.alpha})`;
-                    ctx.fill();
-                }
-            }
-
-            for (let i = 0; i < COUNT; i++) {
-                particles.push(new Particle());
-            }
-
-            function drawLines() {
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 150) {
-                            const alpha = (1 - dist / 150) * 0.2;
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(111, 175, 135, ${alpha})`;
-                            ctx.lineWidth = 0.6;
-                            ctx.stroke();
-                        }
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // 如果是数字计数器，触发计数动画
+                    if (entry.target.querySelector('.counter')) {
+                        animateCounters(entry.target);
                     }
                 }
-            }
-
-            function animateBg() {
-                ctx.clearRect(0, 0, w, h);
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-                drawLines();
-                requestAnimationFrame(animateBg);
-            }
-            animateBg();
-
-            // ---------- 数字滚动动画 ----------
-            const statNumbers = document.querySelectorAll('.stat-number');
-
-            // 使用 IntersectionObserver 触发动画
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const el = entry.target;
-                        const target = parseFloat(el.getAttribute('data-target'));
-                        const isFloat = target % 1 !== 0;
-                        const duration = 1800;
-                        const startTime = performance.now();
-
-                        function updateNumber(currentTime) {
-                            const elapsed = currentTime - startTime;
-                            const progress = Math.min(elapsed / duration, 1);
-                            // easeOutQuad
-                            const eased = 1 - (1 - progress) * (1 - progress);
-                            let current = eased * target;
-                            if (isFloat) {
-                                current = current.toFixed(1);
-                            } else {
-                                current = Math.floor(current);
-                            }
-                            el.textContent = current;
-                            if (progress < 1) {
-                                requestAnimationFrame(updateNumber);
-                            } else {
-                                el.textContent = isFloat ? target.toFixed(1) : target;
-                            }
-                        }
-                        requestAnimationFrame(updateNumber);
-                        observer.unobserve(el);
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            statNumbers.forEach(el => observer.observe(el));
-
-            // 如果统计条已经在视口中，立即触发（兼容）
-            setTimeout(() => {
-                statNumbers.forEach(el => {
-                    const rect = el.getBoundingClientRect();
-                    const winHeight = window.innerHeight;
-                    if (rect.top < winHeight * 0.8 && rect.bottom > 0) {
-                        observer.unobserve(el);
-                        // 手动触发一次
-                        const target = parseFloat(el.getAttribute('data-target'));
-                        const isFloat = target % 1 !== 0;
-                        const duration = 1600;
-                        const startTime = performance.now();
-
-                        function forceUpdate(currentTime) {
-                            const elapsed = currentTime - startTime;
-                            const progress = Math.min(elapsed / duration, 1);
-                            const eased = 1 - (1 - progress) * (1 - progress);
-                            let current = eased * target;
-                            if (isFloat) {
-                                current = current.toFixed(1);
-                            } else {
-                                current = Math.floor(current);
-                            }
-                            el.textContent = current;
-                            if (progress < 1) {
-                                requestAnimationFrame(forceUpdate);
-                            } else {
-                                el.textContent = isFloat ? target.toFixed(1) : target;
-                            }
-                        }
-                        requestAnimationFrame(forceUpdate);
-                    }
-                });
-            }, 300);
-
-            // ---------- 平滑锚点滚动 ----------
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetEl = document.getElementById(targetId);
-                    if (targetEl) {
-                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
             });
+        }, observerOptions);
 
-        })();
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 2. 数字递增动画
+        function animateCounters(container) {
+            const counters = container.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 2000; // 2秒
+                const step = target / (duration / 16); // 每16ms增加的数值
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.innerText = Math.ceil(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target.toLocaleString();
+                    }
+                };
+                updateCounter();
+            });
+        }
+
+        // 3. 导航栏滚动效果 (适配浅色主题)
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.05)';
+                header.style.borderBottomColor = 'transparent';
+            } else {
+                header.style.background = 'rgba(248, 250, 252, 0.8)';
+                header.style.boxShadow = 'none';
+                header.style.borderBottomColor = '#E2E8F0';
+            }
+        });
     </script>
-
 </body>
 </html>
