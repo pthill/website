@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X9野生动物监测预警系统 | 科技守护自然</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #F8FAFC;       
+            --bg-secondary: #F1F5F9;     
+            --card-bg: #FFFFFF;          
+            --card-border: #E2E8F0;      
+            --text-primary: #0F172A;     
+            --text-secondary: #64748B;   
+            --accent-green: #059669;     
+            --accent-blue: #2563EB;      
+            --accent-gradient: linear-gradient(135deg, #059669 0%, #2563EB 100%);
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        /* 【终极修复 1】全局重置，彻底锁死横向滚动 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* 确保 padding 不会撑开 width */
+            /* 防止长英文单词或连续字符撑开容器 */
+            word-break: break-word; 
+            overflow-wrap: break-word;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden; /* 物理切断横向滚动条 */
+            position: relative;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* ==================== 导航栏 ==================== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%; /* 使用 100% 替代 100vw */
+            z-index: 1000;
+            background: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        nav {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            /* 防止 Logo 文本过长撑开 */
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 65%; 
+        }
+
+        .logo i { -webkit-text-fill-color: var(--accent-green); }
+
+        .nav-links { display: flex; list-style: none; gap: 2rem; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+
+        /* ==================== 首屏 Hero ==================== */
+        .hero {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 6rem 1.5rem 4rem; /* 顶部留出 header 的空间 */
+            overflow: hidden; /* 【关键】裁剪内部超大的伪元素 */
+            background-image: 
+                linear-gradient(rgba(5, 150, 105, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(5, 150, 105, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* 【终极修复 2】彻底弃用 100vw，改用百分比，防止移动端滚动条计算误差 */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%; /* 相对于父元素 .hero 的 150% */
+            max-width: 800px; 
+            height: 800px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .hero-content { max-width: 800px; position: relative; z-index: 1; width: 100%; }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: rgba(5, 150, 105, 0.08);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            border-radius: 50px;
+            color: var(--accent-green);
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem; 
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #0F172A, #334155);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p { font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; }
+
+        .btn-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary { background: var(--accent-gradient); color: white; box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.25); }
+        .btn-secondary { background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); }
+
+        /* ==================== 通用 Section ==================== */
+        section {
+            width: 100%; /* 使用 100% 而不是 auto */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        .section-header { text-align: center; margin-bottom: 2.5rem; }
+        .section-header h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem; }
+        .section-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        /* ==================== 核心功能 (Features) ==================== */
+        .features-grid {
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            width: 100%; /* 确保卡片不超出网格 */
+        }
+
+        .feature-icon {
+            width: 48px; height: 48px;
+            background: rgba(5, 150, 105, 0.1);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; color: var(--accent-green);
+            margin-bottom: 1.2rem;
+        }
+
+        .feature-card h3 { font-size: 1.15rem; margin-bottom: 0.6rem; }
+        .feature-card p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* ==================== 数据看板 ==================== */
+        .stats-section {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            border: 1px solid var(--card-border);
+            width: 100%;
+        }
+
+        .stats-grid {
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 2.2rem; font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-item p { color: var(--text-secondary); font-size: 0.85rem; }
+
+        /* ==================== 系统优势 (Advantages) ==================== */
+        .advantages-list {
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .advantage-item {
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%; /* 确保不超出网格 */
+        }
+
+        /* 【终极修复 3】解决 Flex 子元素死撑问题 */
+        .advantage-text {
+            flex: 1;         
+            min-width: 0;    /* 核心：允许文本区域缩小 */
+        }
+
+        .advantage-icon {
+            flex-shrink: 0; /* 图标绝对不缩小 */
+            width: 40px; height: 40px;
+            background: rgba(37, 99, 235, 0.08);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-blue); font-size: 1.1rem;
+        }
+
+        .advantage-text h4 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+        .advantage-text p { color: var(--text-secondary); font-size: 0.85rem; }
+
+        /* ==================== 页脚 ==================== */
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        footer a { color: var(--accent-green); text-decoration: none; }
+
+        /* ==================== 移动端终极防御 ==================== */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            
+            /* 【终极修复 4】在移动端强制所有网格变为单列，彻底消灭 minmax 计算误差 */
+            .features-grid, 
+            .stats-grid, 
+            .advantages-list {
+                grid-template-columns: 1fr !important; 
+            }
+
+            .hero h1 { font-size: 1.8rem; }
+            .section-header h2 { font-size: 1.5rem; }
+            .stat-item h3 { font-size: 1.8rem; }
+            
+            /* 减小内边距，让出更多空间 */
+            section { padding: 3rem 1rem; }
+            .feature-card, .advantage-item { padding: 1.2rem; }
+            
+            /* 隐藏移动端过大的背景光晕，防止任何意外溢出 */
+            .hero::before {
+                width: 100%;
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fa-solid fa-paw"></i>
+                <span>X9野生动物监测预警系统</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">首页</a></li>
+                <li><a href="#features">核心功能</a></li>
+                <li><a href="#stats">数据看板</a></li>
+                <li><a href="#advantages">系统优势</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <span class="hero-badge"><i class="fa-solid fa-satellite-dish"></i> X9新一代生态物联网平台</span>
+            <h1>野生动物监测预警系统</h1>
+            <p>融合物联网、人工智能与大数据技术，构建全天候、智能化的生态保护防线，让科技成为守护自然的坚实力量。</p>
+            <div class="btn-group">
+                <a href="#features" class="btn btn-primary">探索系统功能</a>
+                <a href="#advantages" class="btn btn-secondary">了解技术优势</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features">
+        <div class="section-header fade-in">
+            <h2>核心功能</h2>
+            <p>从数据采集到智能决策，提供全链路的野生动物保护解决方案</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-video"></i></div>
+                <h3>全天候实时监测</h3>
+                <p>无缝接入红外相机、声纹传感器与气象站，7×24小时不间断采集野外多模态数据，无惧恶劣环境。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>AI 智能识别</h3>
+                <p>基于边缘计算与深度学习算法，精准识别数百种野生动物及其行为特征，有效过滤无效触发数据。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-bell"></i></div>
+                <h3>多维预警推送</h3>
+                <p>当检测到珍稀物种出没或人兽冲突风险时，系统秒级触发多端预警（短信、APP、大屏），防患于未然。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>生态大数据分析</h3>
+                <p>可视化展示物种分布、活动轨迹与种群趋势，生成专业生态报告，为科研与保护决策提供数据支撑。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats">
+        <div class="stats-section fade-in">
+            <div class="stats-grid">
+                <div class="stat-item"><h3 class="counter" data-target="15000">0</h3><p>监测覆盖面积 (km²)</p></div>
+                <div class="stat-item"><h3 class="counter" data-target="500">0</h3><p>可识别物种数量</p></div>
+                <div class="stat-item"><h3 class="counter" data-target="99">0</h3><p>识别准确率 (%)</p></div>
+                <div class="stat-item"><h3 class="counter" data-target="3">0</h3><p>预警响应时间 (秒)</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="advantages">
+        <div class="section-header fade-in">
+            <h2>为什么选择我们</h2>
+            <p>专为复杂野外环境设计的工业级生态监测架构</p>
+        </div>
+        <div class="advantages-list">
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-microchip"></i></div>
+                <div class="advantage-text">
+                    <h4>端云协同架构</h4>
+                    <p>前端设备具备边缘计算能力，本地完成初步识别与过滤，大幅降低网络带宽压力，提升响应速度。</p>
+                </div>
+            </div>
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-solar-panel"></i></div>
+                <div class="advantage-text">
+                    <h4>绿色能源驱动</h4>
+                    <p>监测终端采用“太阳能+风能”互补供电系统，配合超低功耗设计，实现真正的无人值守与长期运行。</p>
+                </div>
+            </div>
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="advantage-text">
+                    <h4>高可靠防护等级</h4>
+                    <p>硬件设备达到 IP67 防护等级，防盐雾、防霉菌、耐高低温，完美适应雨林、雪山、荒漠等极端生境。</p>
+                </div>
+            </div>
+            <div class="advantage-item fade-in">
+                <div class="advantage-icon"><i class="fa-solid fa-plug"></i></div>
+                <div class="advantage-text">
+                    <h4>开放兼容生态</h4>
+                    <p>提供标准化 API 接口，支持对接各类第三方红外相机、无人机及政府监管平台，打破数据孤岛。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 X9 野生动物监测预警系统. 科技守护自然，共建地球生命共同体.</p>
+        <p style="margin-top: 0.5rem;">联系我们: 15677672224 &nbsp;|&nbsp; <a href="mailto:pthill@163.com">pthill@163.com</a></p>
+    </footer>
+
+    <script>
+        // 滚动淡入与数字动画
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    if (entry.target.querySelector('.counter')) animateCounters(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        // 添加 fade-in 样式
+        const style = document.createElement('style');
+        style.innerHTML = `.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; } .fade-in.visible { opacity: 1; transform: translateY(0); }`;
+        document.head.appendChild(style);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        function animateCounters(container) {
+            container.querySelectorAll('.counter').forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const step = target / 125; let current = 0;
+                const update = () => {
+                    current += step;
+                    if (current < target) { counter.innerText = Math.ceil(current).toLocaleString(); requestAnimationFrame(update); }
+                    else { counter.innerText = target.toLocaleString(); }
+                };
+                update();
+            });
+        }
+    </script>
+</body>
+</html>
