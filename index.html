@@ -1,453 +1,621 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>X9野生动物监测预警系统 | 科技守护自然</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X9 野生动物监测预警系统</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
-        :root {
-            --bg-primary: #F8FAFC;       
-            --bg-secondary: #F1F5F9;     
-            --card-bg: #FFFFFF;          
-            --card-border: #E2E8F0;      
-            --text-primary: #0F172A;     
-            --text-secondary: #64748B;   
-            --accent-green: #059669;     
-            --accent-blue: #2563EB;      
-            --accent-gradient: linear-gradient(135deg, #059669 0%, #2563EB 100%);
-            
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-        }
-
-        /* 【终极修复 1】全局重置，彻底锁死横向滚动 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box; /* 确保 padding 不会撑开 width */
-            /* 防止长英文单词或连续字符撑开容器 */
-            word-break: break-word; 
-            overflow-wrap: break-word;
-        }
-
+        /* ===== 全局重置 ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden; /* 物理切断横向滚动条 */
-            position: relative;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
-
-        html { scroll-behavior: smooth; }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #F4F4F4;
+            color: #111827;
             line-height: 1.6;
         }
 
-        /* ==================== 导航栏 ==================== */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%; /* 使用 100% 替代 100vw */
-            z-index: 1000;
-            background: rgba(248, 250, 252, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--card-border);
+        /* ===== 品牌色 ===== */
+        :root {
+            --brand-green: #5C7D52;
+            --brand-green-dark: #4a6541;
+            --brand-green-vibrant: #74b72e;
+            --bg-light: #F4F4F4;
+            --bg-section: #FAFAFA;
+            --text-dark: #111827;
+            --text-muted: #6B7280;
         }
 
-        nav {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
+        /* ===== 按钮 ===== */
+        .btn-primary {
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            /* 防止 Logo 文本过长撑开 */
-            white-space: nowrap; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 65%; 
+            background: #5C7D52;
+            color: #fff;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 20px -5px rgba(92, 125, 82, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background: #4a6541;
+            box-shadow: 0 20px 40px -5px rgba(92, 125, 82, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: #111827;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            border-color: #5C7D52;
+            color: #5C7D52;
+            transform: translateY(-2px);
         }
 
-        .logo i { -webkit-text-fill-color: var(--accent-green); }
+        /* ===== 上标标签 ===== */
+        .green-overline {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #5C7D52;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        @media (min-width: 640px) {
+            .green-overline { font-size: 0.875rem; }
+        }
 
-        .nav-links { display: flex; list-style: none; gap: 2rem; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
-
-        /* ==================== 首屏 Hero ==================== */
-        .hero {
-            width: 100%;
-            min-height: 100vh;
+        /* ===== 服务卡片 ===== */
+        .service-card {
+            background: #fff;
+            border-radius: 2rem;
+            border-bottom: 6px solid #5C7D52;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.08);
+        }
+        .service-icon {
+            position: absolute;
+            top: -1.75rem;
+            left: 2rem;
+            width: 4rem;
+            height: 4rem;
+            background: #5C7D52;
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
+            color: #fff;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+        .service-card:hover .service-icon {
+            transform: translateY(-4px);
+        }
+
+        /* ===== 项目卡片 ===== */
+        .project-card {
             position: relative;
-            padding: 6rem 1.5rem 4rem; /* 顶部留出 header 的空间 */
-            overflow: hidden; /* 【关键】裁剪内部超大的伪元素 */
-            background-image: 
-                linear-gradient(rgba(5, 150, 105, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(5, 150, 105, 0.04) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        /* 【终极修复 2】彻底弃用 100vw，改用百分比，防止移动端滚动条计算误差 */
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150%; /* 相对于父元素 .hero 的 150% */
-            max-width: 800px; 
-            height: 800px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
-            filter: blur(60px);
-            z-index: 0;
-        }
-
-        .hero-content { max-width: 800px; position: relative; z-index: 1; width: 100%; }
-
-        .hero-badge {
-            display: inline-block;
-            padding: 0.4rem 1.2rem;
-            background: rgba(5, 150, 105, 0.08);
-            border: 1px solid rgba(5, 150, 105, 0.2);
-            border-radius: 50px;
-            color: var(--accent-green);
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero h1 {
-            font-size: 2.2rem; 
-            font-weight: 800;
-            line-height: 1.3;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, #0F172A, #334155);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p { font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; }
-
-        .btn-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-
-        .btn {
-            padding: 0.8rem 1.8rem;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            aspect-ratio: 4/5;
+            border-radius: 1rem;
+            overflow: hidden;
             cursor: pointer;
-            border: none;
         }
-
-        .btn-primary { background: var(--accent-gradient); color: white; box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.25); }
-        .btn-secondary { background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); }
-
-        /* ==================== 通用 Section ==================== */
-        section {
-            width: 100%; /* 使用 100% 而不是 auto */
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 1.5rem;
-        }
-
-        .section-header { text-align: center; margin-bottom: 2.5rem; }
-        .section-header h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem; }
-        .section-header p { color: var(--text-secondary); font-size: 0.95rem; }
-
-        /* ==================== 核心功能 (Features) ==================== */
-        .features-grid {
-            display: grid;
+        .project-card img {
             width: 100%;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
         }
-
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
+        .project-card:hover img {
+            transform: scale(1.05);
+        }
+        .project-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2) 50%, transparent);
             padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            width: 100%; /* 确保卡片不超出网格 */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            color: #fff;
+        }
+        .project-overlay-inner {
+            transform: translateY(1rem);
+            transition: transform 0.3s ease;
+        }
+        .project-card:hover .project-overlay-inner {
+            transform: translateY(0);
         }
 
-        .feature-icon {
-            width: 48px; height: 48px;
-            background: rgba(5, 150, 105, 0.1);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; color: var(--accent-green);
-            margin-bottom: 1.2rem;
-        }
-
-        .feature-card h3 { font-size: 1.15rem; margin-bottom: 0.6rem; }
-        .feature-card p { color: var(--text-secondary); font-size: 0.9rem; }
-
-        /* ==================== 数据看板 ==================== */
-        .stats-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 2.5rem 1.5rem;
-            border: 1px solid var(--card-border);
-            width: 100%;
-        }
-
-        .stats-grid {
-            display: grid;
-            width: 100%;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 2.2rem; font-weight: 800;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .stat-item p { color: var(--text-secondary); font-size: 0.85rem; }
-
-        /* ==================== 系统优势 (Advantages) ==================== */
-        .advantages-list {
-            display: grid;
-            width: 100%;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-        }
-
+        /* ===== 优势列表 ===== */
         .advantage-item {
             display: flex;
-            gap: 1.2rem;
-            align-items: flex-start;
-            background: var(--card-bg);
+            gap: 1.25rem;
+            background: #fff;
             padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid var(--card-border);
-            width: 100%; /* 确保不超出网格 */
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
-
-        /* 【终极修复 3】解决 Flex 子元素死撑问题 */
-        .advantage-text {
-            flex: 1;         
-            min-width: 0;    /* 核心：允许文本区域缩小 */
+        .advantage-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.08);
         }
-
         .advantage-icon {
-            flex-shrink: 0; /* 图标绝对不缩小 */
-            width: 40px; height: 40px;
-            background: rgba(37, 99, 235, 0.08);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--accent-blue); font-size: 1.1rem;
+            flex-shrink: 0;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: #5C7D52;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.25rem;
         }
 
-        .advantage-text h4 { font-size: 1.05rem; margin-bottom: 0.4rem; }
-        .advantage-text p { color: var(--text-secondary); font-size: 0.85rem; }
-
-        /* ==================== 页脚 ==================== */
-        footer {
-            width: 100%;
-            text-align: center;
-            padding: 2rem 1.5rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--card-border);
-            color: var(--text-secondary);
-            font-size: 0.8rem;
+        /* ===== 统计数字 ===== */
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #5C7D52;
         }
-        footer a { color: var(--accent-green); text-decoration: none; }
+        @media (min-width: 640px) {
+            .stat-number { font-size: 3.5rem; }
+        }
 
-        /* ==================== 移动端终极防御 ==================== */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            
-            /* 【终极修复 4】在移动端强制所有网格变为单列，彻底消灭 minmax 计算误差 */
-            .features-grid, 
-            .stats-grid, 
-            .advantages-list {
-                grid-template-columns: 1fr !important; 
-            }
-
-            .hero h1 { font-size: 1.8rem; }
-            .section-header h2 { font-size: 1.5rem; }
-            .stat-item h3 { font-size: 1.8rem; }
-            
-            /* 减小内边距，让出更多空间 */
-            section { padding: 3rem 1rem; }
-            .feature-card, .advantage-item { padding: 1.2rem; }
-            
-            /* 隐藏移动端过大的背景光晕，防止任何意外溢出 */
-            .hero::before {
-                width: 100%;
-                height: 400px;
+        /* ===== Hero 视频混合 ===== */
+        .hero-video {
+            mix-blend-mode: multiply;
+            opacity: 0.7;
+        }
+        @media (min-width: 768px) {
+            .hero-video {
+                opacity: 1;
             }
         }
+
+        /* ===== 淡入动画 ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== 滚动条 ===== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #5C7D52; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a6541; }
     </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
+    <!-- ==================== 导航 ==================== -->
+    <header class="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/70 border-b border-gray-200/50">
+        <div class="max-w-7xl mx-auto px-6 md:px-8 flex items-center justify-between h-20">
+            <a href="#" class="flex items-center gap-2 text-2xl font-extrabold text-[#5C7D52]">
                 <i class="fa-solid fa-paw"></i>
                 <span>X9野生动物监测预警系统</span>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-10 font-medium text-gray-700">
+                <a href="#features" class="hover:text-[#5C7D52] transition">核心功能</a>
+                <a href="#cases" class="hover:text-[#5C7D52] transition">应用案例</a>
+                <a href="#advantages" class="hover:text-[#5C7D52] transition">系统优势</a>
+            </nav>
+
+            <a href="#advantages" class="hidden md:inline-flex btn-primary text-sm px-6 py-3">
+                了解优势 <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <button id="menuToggle" class="md:hidden text-gray-700 text-2xl">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- 移动端菜单 -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white/95 backdrop-blur-sm border-t border-gray-200">
+            <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-4">
+                <a href="#features" class="text-lg font-medium text-gray-700 hover:text-[#5C7D52]">核心功能</a>
+                <a href="#cases" class="text-lg font-medium text-gray-700 hover:text-[#5C7D52]">应用案例</a>
+                <a href="#advantages" class="text-lg font-medium text-gray-700 hover:text-[#5C7D52]">系统优势</a>
+                <a href="#advantages" class="btn-primary justify-center text-sm">了解优势</a>
             </div>
-            <ul class="nav-links">
-                <li><a href="#hero">首页</a></li>
-                <li><a href="#features">核心功能</a></li>
-                <li><a href="#stats">数据看板</a></li>
-                <li><a href="#advantages">系统优势</a></li>
-            </ul>
-        </nav>
+        </div>
     </header>
 
-    <section class="hero" id="hero">
-        <div class="hero-content">
-            <span class="hero-badge"><i class="fa-solid fa-satellite-dish"></i> X9新一代生态物联网平台</span>
-            <h1>野生动物监测预警系统</h1>
-            <p>融合物联网、人工智能与大数据技术，构建全天候、智能化的生态保护防线，让科技成为守护自然的坚实力量。</p>
-            <div class="btn-group">
-                <a href="#features" class="btn btn-primary">探索系统功能</a>
-                <a href="#advantages" class="btn btn-secondary">了解技术优势</a>
-            </div>
-        </div>
-    </section>
+    <!-- ==================== HERO ==================== -->
+    <section class="relative min-h-[calc(100vh-80px)] flex items-center pt-24 overflow-hidden">
+        <!-- 背景点阵 -->
+        <div class="absolute inset-0 -z-10 opacity-30 pointer-events-none" style="background-image: radial-gradient(#5C7D52 2px, transparent 2px); background-size: 40px 40px;"></div>
 
-    <section id="features">
-        <div class="section-header fade-in">
-            <h2>核心功能</h2>
-            <p>从数据采集到智能决策，提供全链路的野生动物保护解决方案</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card fade-in">
-                <div class="feature-icon"><i class="fa-solid fa-video"></i></div>
-                <h3>全天候实时监测</h3>
-                <p>无缝接入红外相机、声纹传感器与气象站，7×24小时不间断采集野外多模态数据，无惧恶劣环境。</p>
-            </div>
-            <div class="feature-card fade-in">
-                <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
-                <h3>AI 智能识别</h3>
-                <p>基于边缘计算与深度学习算法，精准识别数百种野生动物及其行为特征，有效过滤无效触发数据。</p>
-            </div>
-            <div class="feature-card fade-in">
-                <div class="feature-icon"><i class="fa-solid fa-bell"></i></div>
-                <h3>多维预警推送</h3>
-                <p>当检测到珍稀物种出没或人兽冲突风险时，系统秒级触发多端预警（短信、APP、大屏），防患于未然。</p>
-            </div>
-            <div class="feature-card fade-in">
-                <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
-                <h3>生态大数据分析</h3>
-                <p>可视化展示物种分布、活动轨迹与种群趋势，生成专业生态报告，为科研与保护决策提供数据支撑。</p>
-            </div>
-        </div>
-    </section>
+        <div class="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- 左列 -->
+            <div class="relative z-10">
+                <span class="green-overline">
+                    <i class="fa-solid fa-satellite-dish"></i> X9 · 新一代生态物联网平台
+                </span>
+                <h1 class="text-4xl sm:text-5xl lg:text-[4rem] leading-[1.1] font-extrabold text-gray-900 mt-4">
+                    野生动物监测<br class="hidden sm:block" />预警系统
+                </h1>
+                <p class="text-lg text-gray-600 mt-6 max-w-lg leading-relaxed">
+                    融合物联网、人工智能与大数据技术，构建全天候、智能化的生态保护防线，让科技成为守护自然的坚实力量。
+                </p>
+                <div class="mt-8 flex flex-wrap items-center gap-4">
+                    <a href="#features" class="btn-primary">
+                        探索系统功能 <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#advantages" class="btn-secondary">
+                        技术优势
+                    </a>
+                </div>
 
-    <section id="stats">
-        <div class="stats-section fade-in">
-            <div class="stats-grid">
-                <div class="stat-item"><h3 class="counter" data-target="15000">0</h3><p>监测覆盖面积 (km²)</p></div>
-                <div class="stat-item"><h3 class="counter" data-target="500">0</h3><p>可识别物种数量</p></div>
-                <div class="stat-item"><h3 class="counter" data-target="99">0</h3><p>识别准确率 (%)</p></div>
-                <div class="stat-item"><h3 class="counter" data-target="3">0</h3><p>预警响应时间 (秒)</p></div>
-            </div>
-        </div>
-    </section>
-
-    <section id="advantages">
-        <div class="section-header fade-in">
-            <h2>为什么选择我们</h2>
-            <p>专为复杂野外环境设计的工业级生态监测架构</p>
-        </div>
-        <div class="advantages-list">
-            <div class="advantage-item fade-in">
-                <div class="advantage-icon"><i class="fa-solid fa-microchip"></i></div>
-                <div class="advantage-text">
-                    <h4>端云协同架构</h4>
-                    <p>前端设备具备边缘计算能力，本地完成初步识别与过滤，大幅降低网络带宽压力，提升响应速度。</p>
+                <!-- 合作伙伴 -->
+                <div class="mt-10 flex items-center gap-6 text-gray-400 text-sm font-semibold flex-wrap">
+                    <span><i class="fa-solid fa-building-columns mr-1"></i> 国家林草局</span>
+                    <span><i class="fa-solid fa-tree mr-1"></i> 世界自然基金会</span>
+                    <span><i class="fa-solid fa-flask mr-1"></i> 中科院生态所</span>
                 </div>
             </div>
-            <div class="advantage-item fade-in">
-                <div class="advantage-icon"><i class="fa-solid fa-solar-panel"></i></div>
-                <div class="advantage-text">
-                    <h4>绿色能源驱动</h4>
-                    <p>监测终端采用“太阳能+风能”互补供电系统，配合超低功耗设计，实现真正的无人值守与长期运行。</p>
-                </div>
-            </div>
-            <div class="advantage-item fade-in">
-                <div class="advantage-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <div class="advantage-text">
-                    <h4>高可靠防护等级</h4>
-                    <p>硬件设备达到 IP67 防护等级，防盐雾、防霉菌、耐高低温，完美适应雨林、雪山、荒漠等极端生境。</p>
-                </div>
-            </div>
-            <div class="advantage-item fade-in">
-                <div class="advantage-icon"><i class="fa-solid fa-plug"></i></div>
-                <div class="advantage-text">
-                    <h4>开放兼容生态</h4>
-                    <p>提供标准化 API 接口，支持对接各类第三方红外相机、无人机及政府监管平台，打破数据孤岛。</p>
+
+            <!-- 右列 – 视频 -->
+            <div class="relative flex justify-center items-center lg:justify-end">
+                <div class="relative w-full max-w-[700px] aspect-square lg:translate-x-12">
+                    <video autoplay muted loop playsinline class="w-full h-full object-contain hero-video">
+                        <source src="https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/floating_island_bg_hero.mp4" type="video/mp4" />
+                    </video>
+                    <div class="absolute inset-0 -z-10 bg-[#5C7D52]/10 rounded-full blur-3xl scale-75"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2026 X9 野生动物监测预警系统. 科技守护自然，共建地球生命共同体.</p>
-        <p style="margin-top: 0.5rem;">联系我们: 15677672224 &nbsp;|&nbsp; <a href="mailto:pthill@163.com">pthill@163.com</a></p>
+    <!-- ==================== 核心功能 ==================== -->
+    <section id="features" class="py-24 md:py-28 bg-[#FAFAFA] relative overflow-hidden">
+        <!-- 装饰圆环 -->
+        <div class="absolute -top-20 -right-20 w-64 h-64 border-2 border-[#5C7D52]/10 rounded-full"></div>
+        <div class="absolute -bottom-20 -left-20 w-96 h-96 border-2 border-[#5C7D52]/10 rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
+                <span class="green-overline justify-center"><i class="fa-solid fa-microchip"></i> 核心功能</span>
+                <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-gray-900 mt-3 leading-tight">
+                    从数据采集到智能决策
+                </h2>
+                <p class="text-gray-600 mt-4 text-lg">全链路野生动物保护解决方案</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- 功能 1 -->
+                <div class="service-card fade-in">
+                    <div class="service-icon"><i class="fa-solid fa-video"></i></div>
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop" alt="实时监测" class="w-full h-full object-cover" />
+                        <svg class="absolute bottom-0 left-0 w-full h-16 fill-white" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                            <path d="M0,0 L1200,0 L1200,120 C800,60 400,120 0,120 Z" />
+                        </svg>
+                    </div>
+                    <div class="px-8 pt-6 pb-10">
+                        <h3 class="text-xl font-bold text-gray-900">全天候实时监测</h3>
+                        <p class="text-gray-500 text-sm mt-2 leading-relaxed">无缝接入红外相机、声纹传感器与气象站，7×24小时不间断采集野外多模态数据。</p>
+                    </div>
+                </div>
+
+                <!-- 功能 2 -->
+                <div class="service-card fade-in">
+                    <div class="service-icon"><i class="fa-solid fa-brain"></i></div>
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop" alt="AI识别" class="w-full h-full object-cover" />
+                        <svg class="absolute bottom-0 left-0 w-full h-16 fill-white" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                            <path d="M0,0 L1200,0 L1200,120 C800,60 400,120 0,120 Z" />
+                        </svg>
+                    </div>
+                    <div class="px-8 pt-6 pb-10">
+                        <h3 class="text-xl font-bold text-gray-900">AI 智能识别</h3>
+                        <p class="text-gray-500 text-sm mt-2 leading-relaxed">基于边缘计算与深度学习，精准识别数百种野生动物及其行为特征，有效过滤无效数据。</p>
+                    </div>
+                </div>
+
+                <!-- 功能 3 -->
+                <div class="service-card fade-in">
+                    <div class="service-icon"><i class="fa-solid fa-bell"></i></div>
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop" alt="预警推送" class="w-full h-full object-cover" />
+                        <svg class="absolute bottom-0 left-0 w-full h-16 fill-white" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                            <path d="M0,0 L1200,0 L1200,120 C800,60 400,120 0,120 Z" />
+                        </svg>
+                    </div>
+                    <div class="px-8 pt-6 pb-10">
+                        <h3 class="text-xl font-bold text-gray-900">多维预警推送</h3>
+                        <p class="text-gray-500 text-sm mt-2 leading-relaxed">珍稀物种出没或人兽冲突风险时，秒级触发多端预警（短信、APP、大屏），防患于未然。</p>
+                    </div>
+                </div>
+
+                <!-- 功能 4 -->
+                <div class="service-card fade-in">
+                    <div class="service-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=800&auto=format&fit=crop" alt="数据分析" class="w-full h-full object-cover" />
+                        <svg class="absolute bottom-0 left-0 w-full h-16 fill-white" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                            <path d="M0,0 L1200,0 L1200,120 C800,60 400,120 0,120 Z" />
+                        </svg>
+                    </div>
+                    <div class="px-8 pt-6 pb-10">
+                        <h3 class="text-xl font-bold text-gray-900">生态大数据分析</h3>
+                        <p class="text-gray-500 text-sm mt-2 leading-relaxed">可视化展示物种分布、活动轨迹与种群趋势，为科研与保护决策提供数据支撑。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 数据看板 ==================== -->
+    <section class="py-16 md:py-20 bg-[#F4F4F4]">
+        <div class="max-w-7xl mx-auto px-6 md:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="fade-in">
+                    <p class="stat-number counter" data-target="15000">0</p>
+                    <p class="text-gray-500 font-medium mt-1">监测覆盖 (km²)</p>
+                </div>
+                <div class="fade-in">
+                    <p class="stat-number counter" data-target="500">0</p>
+                    <p class="text-gray-500 font-medium mt-1">可识别物种</p>
+                </div>
+                <div class="fade-in">
+                    <p class="stat-number counter" data-target="99">0</p>
+                    <p class="text-gray-500 font-medium mt-1">识别准确率 (%)</p>
+                </div>
+                <div class="fade-in">
+                    <p class="stat-number counter" data-target="3">0</p>
+                    <p class="text-gray-500 font-medium mt-1">预警响应 (秒)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 应用案例 ==================== -->
+    <section id="cases" class="py-24 md:py-28 bg-[#FAFAFA]">
+        <div class="max-w-7xl mx-auto px-6 md:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
+                <div class="fade-in">
+                    <span class="green-overline"><i class="fa-solid fa-map-location-dot"></i> 应用案例</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">守护生物多样性</h2>
+                </div>
+                <a href="#" class="text-[#5C7D52] font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+                    查看全部 <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 案例 1 -->
+                <div class="project-card fade-in">
+                    <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&auto=format&fit=crop" alt="森林监测" />
+                    <div class="project-overlay">
+                        <div class="project-overlay-inner">
+                            <span class="text-[#74b72e] text-sm font-bold uppercase tracking-wider">森林生态</span>
+                            <h3 class="text-2xl font-bold mt-1">东北虎豹国家公园</h3>
+                            <p class="text-sm text-gray-300 mt-1">红外相机网格化布设，实时追踪旗舰物种</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 案例 2 -->
+                <div class="project-card fade-in">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop" alt="湿地保护" />
+                    <div class="project-overlay">
+                        <div class="project-overlay-inner">
+                            <span class="text-[#74b72e] text-sm font-bold uppercase tracking-wider">湿地保护</span>
+                            <h3 class="text-2xl font-bold mt-1">鄱阳湖湿地监测</h3>
+                            <p class="text-sm text-gray-300 mt-1">声纹识别+影像AI，守护候鸟迁徙通道</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 案例 3 -->
+                <div class="project-card fade-in">
+                    <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&auto=format&fit=crop" alt="高山生态" />
+                    <div class="project-overlay">
+                        <div class="project-overlay-inner">
+                            <span class="text-[#74b72e] text-sm font-bold uppercase tracking-wider">高山生态</span>
+                            <h3 class="text-2xl font-bold mt-1">三江源物种追踪</h3>
+                            <p class="text-sm text-gray-300 mt-1">高海拔极端环境，雪豹等珍稀动物持续监测</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 系统优势 ==================== -->
+    <section id="advantages" class="py-24 md:py-28 bg-[#F4F4F4] relative overflow-hidden">
+        <div class="absolute -top-20 -right-20 w-64 h-64 border-2 border-[#5C7D52]/10 rounded-full"></div>
+        <div class="absolute -bottom-20 -left-20 w-96 h-96 border-2 border-[#5C7D52]/10 rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
+                <span class="green-overline justify-center"><i class="fa-solid fa-shield-halved"></i> 系统优势</span>
+                <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-gray-900 mt-3 leading-tight">
+                    专为复杂野外环境设计
+                </h2>
+                <p class="text-gray-600 mt-4 text-lg">工业级生态监测架构</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="advantage-item fade-in">
+                    <div class="advantage-icon"><i class="fa-solid fa-microchip"></i></div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900">端云协同架构</h4>
+                        <p class="text-gray-500 text-sm mt-1 leading-relaxed">前端设备具备边缘计算能力，本地完成初步识别与过滤，大幅降低带宽压力，提升响应速度。</p>
+                    </div>
+                </div>
+                <div class="advantage-item fade-in">
+                    <div class="advantage-icon"><i class="fa-solid fa-solar-panel"></i></div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900">绿色能源驱动</h4>
+                        <p class="text-gray-500 text-sm mt-1 leading-relaxed">终端采用"太阳能+风能"互补供电，配合超低功耗设计，实现无人值守与长期稳定运行。</p>
+                    </div>
+                </div>
+                <div class="advantage-item fade-in">
+                    <div class="advantage-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900">高可靠防护等级</h4>
+                        <p class="text-gray-500 text-sm mt-1 leading-relaxed">硬件达 IP67 防护等级，防盐雾、防霉菌、耐高低温，适应雨林、雪山、荒漠等极端生境。</p>
+                    </div>
+                </div>
+                <div class="advantage-item fade-in">
+                    <div class="advantage-icon"><i class="fa-solid fa-plug"></i></div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900">开放兼容生态</h4>
+                        <p class="text-gray-500 text-sm mt-1 leading-relaxed">提供标准化 API 接口，支持对接各类第三方红外相机、无人机及政府监管平台。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 页脚 ==================== -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6 md:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-gray-800">
+                <div>
+                    <div class="flex items-center gap-2 text-2xl font-extrabold text-white">
+                        <i class="fa-solid fa-paw text-[#5C7D52]"></i>
+                        <span>X9</span>
+                    </div>
+                    <p class="mt-4 text-sm leading-relaxed">科技守护自然，共建地球生命共同体。</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">快速导航</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="hover:text-white transition">核心功能</a></li>
+                        <li><a href="#cases" class="hover:text-white transition">应用案例</a></li>
+                        <li><a href="#advantages" class="hover:text-white transition">系统优势</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">联系方式</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fa-solid fa-phone mr-2"></i>15677672224</li>
+                        <li><i class="fa-solid fa-envelope mr-2"></i><a href="mailto:pthill@163.com" class="hover:text-white transition">pthill@163.com</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">关于我们</h4>
+                    <p class="text-sm leading-relaxed">专注于野生动物监测预警与生态保护的科技企业，致力于用智能技术守护生物多样性。</p>
+                </div>
+            </div>
+            <div class="pt-6 text-center text-sm text-gray-500">
+                &copy; <span id="year"></span> X9 野生动物监测预警系统 · 科技守护自然
+            </div>
+        </div>
     </footer>
 
+    <!-- ==================== JavaScript ==================== -->
     <script>
-        // 滚动淡入与数字动画
+        // ---- 移动端菜单 ----
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+
+        // ---- 滚动淡入 ----
+        const fadeEls = document.querySelectorAll('.fade-in');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    if (entry.target.querySelector('.counter')) animateCounters(entry.target);
+                    const counter = entry.target.querySelector('.counter');
+                    if (counter) animateCounter(counter);
                 }
             });
-        }, { threshold: 0.1 });
-        
-        // 添加 fade-in 样式
-        const style = document.createElement('style');
-        style.innerHTML = `.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; } .fade-in.visible { opacity: 1; transform: translateY(0); }`;
-        document.head.appendChild(style);
+        }, { threshold: 0.15 });
+        fadeEls.forEach(el => observer.observe(el));
 
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-        function animateCounters(container) {
-            container.querySelectorAll('.counter').forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                const step = target / 125; let current = 0;
-                const update = () => {
-                    current += step;
-                    if (current < target) { counter.innerText = Math.ceil(current).toLocaleString(); requestAnimationFrame(update); }
-                    else { counter.innerText = target.toLocaleString(); }
-                };
-                update();
-            });
+        // ---- 数字递增 ----
+        function animateCounter(el) {
+            const target = parseInt(el.getAttribute('data-target'));
+            const duration = 2000;
+            const startTime = performance.now();
+            function update(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(eased * target).toLocaleString();
+                if (progress < 1) requestAnimationFrame(update);
+                else el.textContent = target.toLocaleString();
+            }
+            requestAnimationFrame(update);
         }
+
+        // 如果统计区已可见，直接触发
+        document.querySelectorAll('#stats .fade-in.visible .counter').forEach(el => animateCounter(el));
+
+        // ---- 版权年份 ----
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // ---- 平滑滚动 ----
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+            });
+        });
     </script>
 </body>
 </html>
